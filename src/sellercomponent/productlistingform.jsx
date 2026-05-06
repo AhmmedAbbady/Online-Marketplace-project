@@ -1,13 +1,25 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { getCurrentUser } from '../auth/auth'
 import './productlistingform.css'
 
+const CATEGORY_OPTIONS = [
+  'Electronics',
+  'Fashion',
+  'Home',
+  'Beauty',
+  'Sports',
+  'Books',
+  'Toys',
+  'Groceries',
+]
+
 const INITIAL_FORM = {
   name: '',
-  category: '',
+  category: 'Electronics',
   price: '',
   stock: '',
-  imageUrl: '',
+  imageData: '',
+  imageName: '',
   description: '',
 }
 
@@ -27,17 +39,6 @@ export default function ProductListingForm() {
   const [success, setSuccess] = useState('')
   const [products, setProducts] = useState(readProducts)
 
-  const canSubmit = useMemo(() => {
-    return (
-      form.name.trim() &&
-      form.category.trim() &&
-      Number(form.price) > 0 &&
-      Number.isInteger(Number(form.stock)) &&
-      Number(form.stock) >= 0 &&
-      form.description.trim()
-    )
-  }, [form])
-
   if (!user) return null
 
   if (user.role !== 'seller') {
@@ -54,6 +55,35 @@ export default function ProductListingForm() {
     setForm((prev) => ({ ...prev, [name]: value }))
     setError('')
     setSuccess('')
+  }
+
+  function onImageChange(event) {
+    const file = event.target.files?.[0]
+    if (!file) {
+      setForm((prev) => ({ ...prev, imageData: '', imageName: '' }))
+      return
+    }
+
+    if (!file.type.startsWith('image/')) {
+      setError('Please select an image file.')
+      return
+    }
+
+    const reader = new FileReader()
+    reader.onload = () => {
+      const data = typeof reader.result === 'string' ? reader.result : ''
+      setForm((prev) => ({
+        ...prev,
+        imageData: data,
+        imageName: file.name,
+      }))
+      setError('')
+      setSuccess('')
+    }
+    reader.onerror = () => {
+      setError('Failed to upload image. Try another file.')
+    }
+    reader.readAsDataURL(file)
   }
 
   function onSubmit(event) {
@@ -80,24 +110,35 @@ export default function ProductListingForm() {
       return
     }
 
+    if (!form.imageData) {
+      setError('Please upload a product image.')
+      return
+    }
+
     const newProduct = {
       id: Date.now().toString(),
       name: trimmedName,
       category: trimmedCategory,
       price: priceValue,
       stock: stockValue,
-      imageUrl: form.imageUrl.trim(),
+      imageData: form.imageData,
+      imageName: form.imageName,
       description: trimmedDescription,
       sellerEmail: user.email,
       createdAt: new Date().toISOString(),
     }
 
     const updated = [newProduct, ...products]
-    localStorage.setItem('marketplace_products', JSON.stringify(updated))
-    setProducts(updated)
-    setForm(INITIAL_FORM)
-    setSuccess('Product listed successfully.')
-    setError('')
+
+    try {
+      localStorage.setItem('marketplace_products', JSON.stringify(updated))
+      setProducts(updated)
+      setForm(INITIAL_FORM)
+      setSuccess('Product listed successfully.')
+      setError('')
+    } catch {
+      setError('Unable to save product. Try a smaller image file.')
+    }
   }
 
   return (
@@ -125,14 +166,18 @@ export default function ProductListingForm() {
 
             <label className="field">
               Category
-              <input
+              <select
                 name="category"
-                type="text"
                 value={form.category}
                 onChange={onChange}
-                placeholder="Electronics"
                 required
-              />
+              >
+                {CATEGORY_OPTIONS.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
             </label>
 
             <div className="listingRow">
@@ -166,15 +211,23 @@ export default function ProductListingForm() {
             </div>
 
             <label className="field">
-              Image URL
+              Product Image
               <input
-                name="imageUrl"
-                type="url"
-                value={form.imageUrl}
-                onChange={onChange}
-                placeholder="https://example.com/product-image.jpg"
+                name="imageFile"
+                type="file"
+                accept="image/*"
+                onChange={onImageChange}
+                required
               />
             </label>
+
+            {form.imageName ? (
+              <p className="listingUploadInfo">Uploaded: {form.imageName}</p>
+            ) : null}
+
+            {form.imageData ? (
+              <img className="listingPreview" src={form.imageData} alt="Product preview" />
+            ) : null}
 
             <label className="field">
               Description
@@ -189,7 +242,7 @@ export default function ProductListingForm() {
               />
             </label>
 
-            <button className="btn" type="submit" disabled={!canSubmit}>
+            <button className="btn" type="submit">
               Publish Product
             </button>
           </form>
