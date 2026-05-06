@@ -1,0 +1,52 @@
+.App {
+  min-height: 100svh;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.navbar__brand {
+  font-family: var(--heading);
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--text-h);
+}
+
+.navbar__nav a {
+  text-decoration: none;
+  color: var(--text-h);
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: var(--social-bg);
+}
+
+.page {
+  padding: 20px 16px;
+  text-align: left;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+}
+
+@media (max-width: 1024px) {
+  .cards {
+    grid-template-columns: 1fr;
+  }
+}
