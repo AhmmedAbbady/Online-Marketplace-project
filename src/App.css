@@ -27,9 +27,94 @@
   background: var(--social-bg);
 }
 
+.linkBtn {
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+  color: var(--text-h);
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: var(--social-bg);
+}
+
 .page {
   padding: 20px 16px;
   text-align: left;
+}
+
+.authWrap {
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+}
+
+.authCard {
+  width: 420px;
+  max-width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 16px;
+  background: var(--bg);
+  text-align: left;
+}
+
+.muted {
+  color: var(--text);
+  margin-top: 6px;
+}
+
+.alert {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--accent-border);
+  background: var(--accent-bg);
+  color: var(--text-h);
+}
+
+.form {
+  margin-top: 14px;
+  display: grid;
+  gap: 12px;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.field input {
+  font: inherit;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-h);
+}
+
+.fieldset {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.radio {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  margin-right: 14px;
+}
+
+.btn {
+  font: inherit;
+  cursor: pointer;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--accent-border);
+  background: var(--accent-bg);
+  color: var(--text-h);
 }
 
 .cards {
