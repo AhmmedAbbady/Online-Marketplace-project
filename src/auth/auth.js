@@ -5,6 +5,26 @@ function readUsers() {
   try {
     const raw = localStorage.getItem(USERS_KEY)
     const parsed = raw ? JSON.parse(raw) : {}
+
+    // Migrate legacy array format into an email-keyed object map.
+    if (Array.isArray(parsed)) {
+      return parsed.reduce((acc, entry) => {
+        const email = String(entry?.email || '')
+          .trim()
+          .toLowerCase()
+        if (!email) return acc
+
+        acc[email] = {
+          name: String(entry?.name || ''),
+          email,
+          password: String(entry?.password || ''),
+          role: entry?.role === 'buyer' ? 'buyer' : 'seller',
+          createdAt: entry?.createdAt || new Date().toISOString(),
+        }
+        return acc
+      }, {})
+    }
+
     return parsed && typeof parsed === 'object' ? parsed : {}
   } catch {
     return {}

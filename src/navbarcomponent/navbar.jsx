@@ -18,9 +18,12 @@ export default function Navbar() {
       <nav className="navbar__nav">
         <Link to="/seller">Seller</Link>
         {user ? (
-          <button className="linkBtn" type="button" onClick={onLogout}>
-            Logout
-          </button>
+          <>
+            {user.role === 'seller' && <Link to="/seller/products/new">List Product</Link>}
+            <button className="linkBtn" type="button" onClick={onLogout}>
+              Logout
+            </button>
+          </>
         ) : (
           <>
             <Link to="/login">Login</Link>

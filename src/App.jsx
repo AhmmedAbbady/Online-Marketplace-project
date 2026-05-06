@@ -4,6 +4,7 @@ import Login from './loginpagecomponent/loginpages'
 import Signup from './loginpagecomponent/signuppage'
 import RequireAuth from './auth/RequireAuth'
 import SellerHome from './sellercomponent/sellerhome'
+import ProductListingForm from './sellercomponent/productlistingform'
 import './App.css'
 
 function App() {
@@ -23,6 +24,14 @@ function App() {
           element={
             <RequireAuth>
               <SellerHome />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/seller/products/new"
+          element={
+            <RequireAuth>
+              <ProductListingForm />
             </RequireAuth>
           }
         />
