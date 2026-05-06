@@ -1,15 +1,17 @@
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
+  --text: #23272f;
+  --text-h: #fff;
+  --bg: #f7f8fa;
+  --border: #e0e0e0;
   --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
+  --accent: #ff5a1f;
+  --accent-bg: linear-gradient(90deg, #ff5a1f 0%, #ff7b54 100%);
+  --accent-border: #ff5a1f;
+  --blue-grad: linear-gradient(90deg, #1e3c72 0%, #2a5298 100%);
+  --magenta-grad: linear-gradient(90deg, #ff5a1f 0%, #c471f5 100%);
+  --social-bg: #fff;
   --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+    rgba(0, 0, 0, 0.08) 0 4px 16px 0;
 
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
   --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
@@ -32,17 +34,19 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
+    --text: #e0e0e0;
+    --text-h: #fff;
+    --bg: #181a20;
+    --border: #23242a;
+    --code-bg: #23242a;
+    --accent: #ff5a1f;
+    --accent-bg: linear-gradient(90deg, #ff5a1f 0%, #ff7b54 100%);
+    --accent-border: #ff5a1f;
+    --blue-grad: linear-gradient(90deg, #1e3c72 0%, #2a5298 100%);
+    --magenta-grad: linear-gradient(90deg, #ff5a1f 0%, #c471f5 100%);
+    --social-bg: #23242a;
     --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+      rgba(0, 0, 0, 0.4) 0 4px 16px 0;
   }
 
   #social .button-icon {
@@ -52,17 +56,36 @@
 
 body {
   margin: 0;
+  min-height: 100svh;
+  background:
+    radial-gradient(
+      1200px circle at 20% -10%,
+      var(--accent-bg),
+      transparent 55%
+    ),
+    radial-gradient(
+      900px circle at 95% 5%,
+      var(--accent-bg),
+      transparent 55%
+    ),
+    var(--bg);
 }
 
 #root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
   min-height: 100svh;
-  display: flex;
-  flex-direction: column;
+  display: block;
+  box-sizing: border-box;
+}
+
+a {
+  color: var(--text-h);
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+* {
   box-sizing: border-box;
 }
 
