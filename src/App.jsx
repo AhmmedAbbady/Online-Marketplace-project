@@ -6,6 +6,7 @@ import RequireAuth from './auth/RequireAuth'
 import SellerHome from './sellercomponent/sellerhome'
 import ProductListingForm from './sellercomponent/productlistingform'
 import BuyerDashboard from './buyercomponent/buyerdashboard'
+import TrackOrders from './buyercomponent/trackorders'
 import './App.css'
 
 function App() {
@@ -41,6 +42,14 @@ function App() {
           element={
             <RequireAuth>
               <BuyerDashboard />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/buyer/track-orders"
+          element={
+            <RequireAuth>
+              <TrackOrders />
             </RequireAuth>
           }
         />

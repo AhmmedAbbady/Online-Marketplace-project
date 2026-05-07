@@ -1,0 +1,251 @@
+.trackOrdersPage {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 2rem 1rem;
+}
+
+.trackOrdersContainer {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.trackOrdersHeader {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.trackOrdersHeader h1 {
+  margin: 0;
+  color: #333;
+  font-size: 2rem;
+}
+
+.trackOrdersHeader .muted {
+  color: #999;
+  margin-top: 0.5rem;
+}
+
+.ordersSection {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.emptyState {
+  text-align: center;
+  padding: 3rem 2rem;
+}
+
+.emptyState .muted {
+  color: #999;
+  font-size: 1.1rem;
+}
+
+.ordersList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.orderItem {
+  border: 2px solid #f0f0f0;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.orderItem:hover {
+  border-color: #667eea;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+.orderHeader {
+  background: linear-gradient(135deg, #f9f9f9 0%, #f0f0f0 100%);
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  transition: background 0.3s ease;
+}
+
+.orderHeader:hover {
+  background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+}
+
+.orderInfo {
+  flex: 1;
+}
+
+.orderProductName {
+  margin: 0;
+  color: #333;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.orderDate {
+  margin: 0.5rem 0 0 0;
+  color: #999;
+  font-size: 0.9rem;
+}
+
+.orderStatus {
+  display: flex;
+  align-items: center;
+}
+
+.statusBadge {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.statusProcessing {
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeaa7;
+}
+
+.statusShipped {
+  background-color: #cfe4ff;
+  color: #084298;
+  border: 1px solid #b6d4fe;
+}
+
+.statusDelivered {
+  background-color: #d1e7dd;
+  color: #0f5132;
+  border: 1px solid #badbcc;
+}
+
+.statusCancelled {
+  background-color: #f8d7da;
+  color: #842029;
+  border: 1px solid #f5c2c7;
+}
+
+.statusDefault {
+  background-color: #e2e3e5;
+  color: #383d41;
+}
+
+.expandIcon {
+  font-size: 1.2rem;
+  color: #667eea;
+  font-weight: bold;
+  width: 30px;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.orderItem.expanded .expandIcon {
+  transform: rotate(180deg);
+}
+
+.orderDetails {
+  background: white;
+  padding: 2rem;
+  border-top: 1px solid #f0f0f0;
+}
+
+.detailsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.detailItem {
+  display: flex;
+  flex-direction: column;
+}
+
+.detailItem label {
+  font-weight: 700;
+  color: #000;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+}
+
+.detailItem p {
+  margin: 0;
+  color: #333;
+  font-size: 1rem;
+}
+
+.totalPrice {
+  font-weight: 600;
+  color: #667eea;
+  font-size: 1.1rem;
+}
+
+.progressBar {
+  width: 100%;
+  height: 8px;
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 0.5rem 0;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  transition: width 0.5s ease;
+}
+
+.progressLabels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #999;
+  margin-top: 0.5rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .trackOrdersPage {
+    padding: 1rem;
+  }
+
+  .trackOrdersHeader {
+    padding: 1.5rem;
+  }
+
+  .trackOrdersHeader h1 {
+    font-size: 1.5rem;
+  }
+
+  .ordersSection {
+    padding: 1.5rem;
+  }
+
+  .orderHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .orderStatus {
+    width: 100%;
+  }
+
+  .expandIcon {
+    position: absolute;
+    right: 1.5rem;
+    top: 1.5rem;
+  }
+
+  .detailsGrid {
+    grid-template-columns: 1fr;
+  }
+}

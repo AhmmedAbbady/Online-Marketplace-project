@@ -18,6 +18,7 @@ export default function Navbar() {
       <nav className="navbar__nav">
         {user && user.role === 'seller' && <Link to="/seller">Seller Dashboard</Link>}
         {user && user.role === 'buyer' && <Link to="/buyer">Marketplace</Link>}
+        {user && user.role === 'buyer' && <Link to="/buyer/track-orders">Track Orders</Link>}
         {user ? (
           <>
             {user.role === 'seller' && (

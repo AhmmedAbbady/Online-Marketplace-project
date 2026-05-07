@@ -1,7 +1,20 @@
 import { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { getCurrentUser } from '../auth/auth'
+import { createOrder } from '../sellercomponent/orderutils'
 import './buyerdashboard.css'
+
+const CATEGORY_OPTIONS = [
+  'All Categories',
+  'Electronics',
+  'Fashion',
+  'Home',
+  'Beauty',
+  'Sports',
+  'Books',
+  'Toys',
+  'Groceries',
+]
 
 function readProducts() {
   try {
@@ -17,6 +30,10 @@ export default function BuyerDashboard() {
   const location = useLocation()
   const [products, setProducts] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState('All Categories')
+  const [orderModal, setOrderModal] = useState(null)
+  const [orderQuantity, setOrderQuantity] = useState(1)
+  const [orderMessage, setOrderMessage] = useState('')
 
   useEffect(() => {
     setProducts(readProducts())
@@ -35,12 +52,60 @@ export default function BuyerDashboard() {
 
   const filteredProducts = products.filter((product) => {
     const term = searchTerm.toLowerCase()
-    return (
+    const matchesSearch =
       product.name.toLowerCase().includes(term) ||
       product.category.toLowerCase().includes(term) ||
       product.description.toLowerCase().includes(term)
-    )
+
+    const matchesCategory =
+      selectedCategory === 'All Categories' || product.category === selectedCategory
+
+    return matchesSearch && matchesCategory
   })
+
+  function handlePlaceOrder(product) {
+    setOrderModal(product)
+    setOrderQuantity(1)
+    setOrderMessage('')
+  }
+
+  function submitOrder() {
+    if (!orderModal) return
+
+    if (orderQuantity < 1 || orderQuantity > orderModal.stock) {
+      setOrderMessage(`Quantity must be between 1 and ${orderModal.stock}`)
+      return
+    }
+
+    try {
+      // Create the order
+      createOrder({
+        productId: orderModal.id,
+        productName: orderModal.name,
+        price: orderModal.price,
+        sellerEmail: orderModal.sellerEmail,
+        buyerEmail: user.email,
+        quantity: orderQuantity,
+      })
+
+      // Decrease product stock
+      const updatedProducts = products.map((product) =>
+        product.id === orderModal.id
+          ? { ...product, stock: product.stock - orderQuantity }
+          : product
+      )
+      localStorage.setItem('marketplace_products', JSON.stringify(updatedProducts))
+      setProducts(updatedProducts)
+
+      setOrderMessage('✓ Order placed successfully!')
+      setTimeout(() => {
+        setOrderModal(null)
+        setOrderQuantity(1)
+      }, 1500)
+    } catch (error) {
+      setOrderMessage('Failed to place order. Try again.')
+    }
+  }
 
   return (
     <main className="page buyerPage">
@@ -49,14 +114,30 @@ export default function BuyerDashboard() {
           <h1>Marketplace</h1>
           <p className="muted">Browse and purchase products from sellers</p>
 
-          <div className="searchBox">
-            <input
-              type="text"
-              placeholder="Search products by name, category, or description..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="searchInput"
-            />
+          <div className="filterControls">
+            <div className="searchBox">
+              <input
+                type="text"
+                placeholder="Search products by name, category, or description..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="searchInput"
+              />
+            </div>
+
+            <div className="categoryFilter">
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="categorySelect"
+              >
+                {CATEGORY_OPTIONS.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </section>
 
@@ -65,8 +146,8 @@ export default function BuyerDashboard() {
 
           {filteredProducts.length === 0 ? (
             <p className="muted">
-              {searchTerm
-                ? 'No products match your search.'
+              {searchTerm || selectedCategory !== 'All Categories'
+                ? 'No products match your filters.'
                 : 'No products available yet.'}
             </p>
           ) : (
@@ -94,8 +175,9 @@ export default function BuyerDashboard() {
                       className="btn buyBtn"
                       type="button"
                       disabled={product.stock === 0}
+                      onClick={() => handlePlaceOrder(product)}
                     >
-                      {product.stock > 0 ? 'Add to Cart' : 'Out of Stock'}
+                      {product.stock > 0 ? 'Place Order' : 'Out of Stock'}
                     </button>
                   </div>
                 </div>
@@ -104,6 +186,68 @@ export default function BuyerDashboard() {
           )}
         </section>
       </div>
+
+      {/* Order Modal */}
+      {orderModal && (
+        <div className="modal">
+          <div className="modalContent">
+            <button className="modalClose" onClick={() => setOrderModal(null)}>
+              ✕
+            </button>
+            <h2>Place Order</h2>
+            <div className="orderDetails">
+              <img src={orderModal.imageData} alt={orderModal.name} className="orderImage" />
+              <div className="orderInfo">
+                <p>
+                  <strong>Product:</strong> {orderModal.name}
+                </p>
+                <p>
+                  <strong>Price:</strong> ${orderModal.price.toFixed(2)}
+                </p>
+                <p>
+                  <strong>Available Stock:</strong> {orderModal.stock}
+                </p>
+              </div>
+            </div>
+
+            <div className="orderForm">
+              <label className="field">
+                Quantity
+                <input
+                  type="number"
+                  min="1"
+                  max={orderModal.stock}
+                  value={orderQuantity}
+                  onChange={(e) => {
+                    setOrderQuantity(Math.max(1, Math.min(orderModal.stock, Number(e.target.value))))
+                    setOrderMessage('')
+                  }}
+                  className="quantityInput"
+                />
+              </label>
+
+              <p className="orderTotal">
+                <strong>Total: ${(orderModal.price * orderQuantity).toFixed(2)}</strong>
+              </p>
+
+              {orderMessage && (
+                <div className={`alert ${orderMessage.includes('✓') ? 'alert--success' : 'alert--error'}`}>
+                  {orderMessage}
+                </div>
+              )}
+
+              <div className="modalActions">
+                <button className="btn" type="button" onClick={submitOrder}>
+                  Confirm Order
+                </button>
+                <button className="btn btn--secondary" type="button" onClick={() => setOrderModal(null)}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   )
 }
