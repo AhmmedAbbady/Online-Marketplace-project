@@ -12,14 +12,23 @@ export default function Navbar() {
 
   return (
     <header className="navbar">
-      <Link className="navbar__brand" to="/seller">
+      <Link className="navbar__brand" to="/">
         Marketplace
       </Link>
       <nav className="navbar__nav">
-        <Link to="/seller">Seller</Link>
+        {user && user.role === 'seller' && <Link to="/seller">Seller Dashboard</Link>}
+        {user && user.role === 'buyer' && <Link to="/buyer">Marketplace</Link>}
         {user ? (
           <>
-            {user.role === 'seller' && <Link to="/seller/products/new">List Product</Link>}
+            {user.role === 'seller' && (
+              <button
+                className="linkBtn"
+                type="button"
+                onClick={() => navigate('/seller/products/new', { state: { t: Date.now() } })}
+              >
+                List Product
+              </button>
+            )}
             <button className="linkBtn" type="button" onClick={onLogout}>
               Logout
             </button>

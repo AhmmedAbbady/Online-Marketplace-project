@@ -80,18 +80,23 @@ export function signup({ name, email, password, role }) {
   return currentUser
 }
 
-export function login({ email, password }) {
+export function login({ email, password, role }) {
   const cleanEmail = String(email || '').trim().toLowerCase()
   const cleanPassword = String(password || '')
 
   if (!cleanEmail) throw new Error('Email is required')
   if (!cleanPassword) throw new Error('Password is required')
+  if (role !== 'seller' && role !== 'buyer') throw new Error('Role is required')
 
   const users = readUsers()
   const user = users[cleanEmail]
 
   if (!user || user.password !== cleanPassword) {
     throw new Error('Invalid email or password')
+  }
+
+  if (user.role !== role) {
+    throw new Error(`This account is a ${user.role} account, not a ${role} account`)
   }
 
   const currentUser = { name: user.name, email: user.email, role: user.role }

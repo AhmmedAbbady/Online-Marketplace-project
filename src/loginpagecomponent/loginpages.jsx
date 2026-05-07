@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { login } from '../auth/auth'
+import { login, getCurrentUser } from '../auth/auth'
 
 export default function Login() {
   const navigate = useNavigate()
@@ -8,11 +8,12 @@ export default function Login() {
 
   const from = useMemo(() => {
     const v = location.state?.from
-    return typeof v === 'string' && v.startsWith('/') ? v : '/seller'
+    return typeof v === 'string' && v.startsWith('/') ? v : null
   }, [location.state])
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [role, setRole] = useState('seller')
   const [error, setError] = useState('')
 
   function onSubmit(e) {
@@ -20,8 +21,10 @@ export default function Login() {
     setError('')
 
     try {
-      login({ email, password })
-      navigate(from, { replace: true })
+      login({ email, password, role })
+      const user = getCurrentUser()
+      const destination = from || (user.role === 'buyer' ? '/buyer' : '/seller')
+      navigate(destination, { replace: true })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed')
     }
@@ -58,6 +61,30 @@ export default function Login() {
               required
             />
           </label>
+
+          <fieldset className="fieldset">
+            <legend>Account Type</legend>
+            <label className="radio">
+              <input
+                type="radio"
+                name="role"
+                value="seller"
+                checked={role === 'seller'}
+                onChange={() => setRole('seller')}
+              />
+              Seller
+            </label>
+            <label className="radio">
+              <input
+                type="radio"
+                name="role"
+                value="buyer"
+                checked={role === 'buyer'}
+                onChange={() => setRole('buyer')}
+              />
+              Buyer
+            </label>
+          </fieldset>
 
           <button className="btn" type="submit">
             Login

@@ -17,7 +17,8 @@ export default function Signup() {
 
     try {
       signup({ name, email, password, role })
-      navigate('/seller', { replace: true })
+      const destination = role === 'buyer' ? '/buyer' : '/seller'
+      navigate(destination, { replace: true })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Signup failed')
     }

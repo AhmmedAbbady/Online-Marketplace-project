@@ -14,6 +14,7 @@ const CATEGORY_OPTIONS = [
 ]
 
 const INITIAL_FORM = {
+  id: '',
   name: '',
   category: 'Electronics',
   price: '',
@@ -115,29 +116,82 @@ export default function ProductListingForm() {
       return
     }
 
-    const newProduct = {
-      id: Date.now().toString(),
-      name: trimmedName,
-      category: trimmedCategory,
-      price: priceValue,
-      stock: stockValue,
-      imageData: form.imageData,
-      imageName: form.imageName,
-      description: trimmedDescription,
-      sellerEmail: user.email,
-      createdAt: new Date().toISOString(),
+    let updated
+    let message
+    if (form.id) {
+      // Edit mode: update existing product
+      updated = products.map((p) =>
+        p.id === form.id && p.sellerEmail === user.email
+          ? {
+              ...p,
+              name: trimmedName,
+              category: trimmedCategory,
+              price: priceValue,
+              stock: stockValue,
+              imageData: form.imageData,
+              imageName: form.imageName,
+              description: trimmedDescription,
+            }
+          : p
+      )
+      message = 'Product updated successfully.'
+    } else {
+      // New product
+      const newProduct = {
+        id: Date.now().toString(),
+        name: trimmedName,
+        category: trimmedCategory,
+        price: priceValue,
+        stock: stockValue,
+        imageData: form.imageData,
+        imageName: form.imageName,
+        description: trimmedDescription,
+        sellerEmail: user.email,
+        createdAt: new Date().toISOString(),
+      }
+      updated = [newProduct, ...products]
+      message = 'Product listed successfully.'
     }
-
-    const updated = [newProduct, ...products]
 
     try {
       localStorage.setItem('marketplace_products', JSON.stringify(updated))
       setProducts(updated)
       setForm(INITIAL_FORM)
-      setSuccess('Product listed successfully.')
+      setSuccess(message)
       setError('')
     } catch {
       setError('Unable to save product. Try a smaller image file.')
+    }
+  }
+
+  function onEdit(product) {
+    setForm({
+      id: product.id,
+      name: product.name,
+      category: product.category,
+      price: product.price,
+      stock: product.stock,
+      imageData: product.imageData,
+      imageName: product.imageName,
+      description: product.description,
+    })
+    setError('')
+    setSuccess('Editing product. Make changes and click Publish Product.')
+  }
+
+  function onDelete(productId) {
+    if (!window.confirm('Are you sure you want to delete this product?')) return
+    const updated = products.filter(
+      (p) => !(p.id === productId && p.sellerEmail === user.email)
+    )
+    try {
+      localStorage.setItem('marketplace_products', JSON.stringify(updated))
+      setProducts(updated)
+      setSuccess('Product deleted.')
+      setError('')
+      if (form.id === productId) setForm(INITIAL_FORM)
+    } catch {
+      setError('Unable to delete product.')
     }
   }
 
@@ -266,6 +320,12 @@ export default function ProductListingForm() {
                     <div className="listingMeta">
                       <span>${item.price.toFixed(2)}</span>
                       <span>Stock: {item.stock}</span>
+                      <button className="listingEditBtn" type="button" onClick={() => onEdit(item)}>
+                        Edit
+                      </button>
+                      <button className="listingDeleteBtn" type="button" onClick={() => onDelete(item.id)}>
+                        Delete
+                      </button>
                     </div>
                   </li>
                 ))}
