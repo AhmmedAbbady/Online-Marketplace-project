@@ -1,0 +1,76 @@
+const express = require('express');
+const dotenv = require('dotenv');
+const mongoose = require('mongoose');
+const path = require('path');
+
+const cors = require('cors');
+
+
+dotenv.config();
+
+const config = require('./config');
+const authRoutes = require('./routes/authRoutes');
+const publicRoutes = require('./routes/publicRoutes');
+const buyerRoutes = require('./routes/buyerRoutes');
+const sellerRoutes = require('./routes/sellerRoutes');
+const buyerOrderRoutes = require('./routes/orderRoutes').buyer;
+const sellerOrderRoutes = require('./routes/orderRoutes').seller;
+const cartRoutes = require('./routes/cartRoutes');
+const { errorHandler } = require('./middleware/errorMiddleware');
+
+const app = express();
+
+// CORS configuration
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  process.env.BUYER_APP_URL,
+  process.env.SELLER_APP_URL
+].filter(Boolean); // Remove undefined values
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+    
+    // Check exact matches
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      return callback(null, true);
+    }
+    
+    // Allow all Vercel domains
+    if (origin && origin.includes('.vercel.app')) {
+      return callback(null, true);
+    }
+    
+    // Reject (use false, not Error)
+    callback(null, false);
+  },
+  credentials: true
+}));
+
+app.use(express.json());
+
+
+// Connect to database
+require('./config/database')();
+
+// Mount routes
+app.use('/api/auth', authRoutes);
+app.use('/api/public', publicRoutes);
+app.use('/api/buyer', buyerRoutes);
+app.use('/api/seller', sellerRoutes);
+
+// Mount new routes
+// app.use('/api/buyer/cart', cartRoutes);               // buyer cart endpoints - REMOVED: cart routes are in buyerRoutes.js
+app.use('/api/buyer/orders', buyerOrderRoutes);       // buyer order endpoints
+app.use('/api/seller/orders', sellerOrderRoutes);     // seller order endpoints
+
+// Health
+app.get('/health', (req, res) => res.json({ ok: true }));
+
+// Error handler
+app.use(errorHandler);
+
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
