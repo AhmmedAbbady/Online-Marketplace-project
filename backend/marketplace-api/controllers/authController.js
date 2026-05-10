@@ -48,7 +48,7 @@ exports.getProfile = async (req, res, next) => {
 exports.updateProfile = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    const { name, email } = req.body;
+    const { name, email, phone } = req.body;
     
     // Check if email is being changed and if it's already taken
     if (email) {
@@ -61,6 +61,7 @@ exports.updateProfile = async (req, res, next) => {
     const updateData = {};
     if (name) updateData.name = name;
     if (email) updateData.email = email;
+    if (typeof phone !== 'undefined') updateData.phone = phone;
 
     const user = await User.findByIdAndUpdate(
       userId,

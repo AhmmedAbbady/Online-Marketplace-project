@@ -51,6 +51,12 @@
   color: #6b7280;
 }
 
+.profile-phone {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #9ca3af;
+}
+
 .edit-profile-btn {
   height: 36px;
   padding: 0 16px;

@@ -85,7 +85,8 @@ export default function Profile({ setIsAuthenticated }) {
       // Update profile on backend
       const updatedUser = await authAPI.updateProfile({
         name: formData.name,
-        email: formData.email
+        email: formData.email,
+        phone: formData.phone
       })
       
       // Update local state and localStorage
@@ -125,6 +126,7 @@ export default function Profile({ setIsAuthenticated }) {
               <div className="profile-info">
                 <h1>{user?.name}</h1>
                 <p className="profile-email">{user?.email}</p>
+                <p className="profile-phone">{user?.phone || 'No phone number provided'}</p>
               </div>
             </div>
             <button className="edit-profile-btn" onClick={() => setIsEditing(!isEditing)}>

@@ -16,6 +16,8 @@ export default function ProductCard({ product }) {
   const [flagResolved, setFlagResolved] = useState(false)
   const [flagId, setFlagId] = useState(null)
   const [loadingFlag, setLoadingFlag] = useState(false)
+  const [addedToCart, setAddedToCart] = useState(false)
+  const [loadingCart, setLoadingCart] = useState(false)
   
   // Handle both backend (title) and frontend (name) field names
   const productName = product.title || product.name || 'Product'
@@ -81,10 +83,37 @@ export default function ProductCard({ product }) {
     checkFlagStatus()
   }, [productId, product.seller])
   
+  useEffect(() => {
+    const fetchCartState = async () => {
+      const token = localStorage.getItem('token')
+      if (!token) return
+
+      setLoadingCart(true)
+      try {
+        const cartResponse = await buyerAPI.getCart()
+        const items = cartResponse?.body?.items || cartResponse?.items || []
+        const existsInCart = items.some(item => {
+          const itemProductId = item.product?._id || item.product?.id || item.product
+          return itemProductId?.toString() === productId?.toString()
+        })
+        setAddedToCart(existsInCart)
+      } catch (err) {
+        console.warn('Could not determine cart state:', err.message || err)
+      } finally {
+        setLoadingCart(false)
+      }
+    }
+
+    if (productId) {
+      fetchCartState()
+    }
+  }, [productId])
+
   const handleAddToCart = async () => {
     try {
       await buyerAPI.addToCart(productId, 1)
       setToast({ message: 'Added to cart!', type: 'success' })
+      setAddedToCart(true)
     } catch (err) {
       console.error('Error adding to cart:', err)
       setToast({ message: err.message || 'Failed to add to cart', type: 'error' })
@@ -262,8 +291,8 @@ export default function ProductCard({ product }) {
           </div>
         </div>
 
-        <button className="add-to-cart" type="button" onClick={handleAddToCart}>
-          Add to Cart
+        <button className="add-to-cart" type="button" onClick={handleAddToCart} disabled={addedToCart || loadingCart}>
+          {addedToCart ? 'Already in Cart' : 'Add to Cart'}
         </button>
       </div>
 

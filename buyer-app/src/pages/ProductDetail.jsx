@@ -14,6 +14,34 @@ export default function ProductDetail() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [addingToCart, setAddingToCart] = useState(false)
+  const [addedToCart, setAddedToCart] = useState(false)
+  const [loadingCart, setLoadingCart] = useState(false)
+
+  useEffect(() => {
+    const fetchCartState = async () => {
+      const token = localStorage.getItem('token')
+      if (!token) return
+
+      setLoadingCart(true)
+      try {
+        const cartResponse = await buyerAPI.getCart()
+        const items = cartResponse?.body?.items || cartResponse?.items || []
+        const existsInCart = items.some(item => {
+          const itemProductId = item.product?._id || item.product?.id || item.product
+          return itemProductId?.toString() === id?.toString()
+        })
+        setAddedToCart(existsInCart)
+      } catch (err) {
+        console.warn('Could not determine cart state:', err.message || err)
+      } finally {
+        setLoadingCart(false)
+      }
+    }
+
+    if (id) {
+      fetchCartState()
+    }
+  }, [id])
 
   useEffect(() => {
     const fetchProductData = async () => {
@@ -49,7 +77,6 @@ export default function ProductDetail() {
   }, [id])
 
   const handleAddToCart = async () => {
-    alert('Adding to cart clicked')
     if (!product) return
 
     console.log('Adding to cart:', product._id || product.id, quantity)
@@ -58,6 +85,7 @@ export default function ProductDetail() {
       await buyerAPI.addToCart(product._id || product.id, quantity)
       setToast({ message: `Added ${quantity} item(s) to cart!`, type: 'success' })
       setQuantity(1)
+      setAddedToCart(true)
     } catch (err) {
       console.error('Error adding to cart:', err)
       setToast({ message: err.message || 'Failed to add to cart', type: 'error' })
@@ -247,9 +275,9 @@ export default function ProductDetail() {
                 className="add-to-cart-large"
                 type="button"
                 onClick={handleAddToCart}
-                disabled={addingToCart || product.inStock === false}
+                disabled={addingToCart || addedToCart || loadingCart || product.inStock === false}
               >
-                {addingToCart ? 'Adding...' : 'Add to Cart'}
+                {addingToCart ? 'Adding...' : addedToCart ? 'Already in Cart' : 'Add to Cart'}
               </button>
 
               <button className="buy-now" type="button">

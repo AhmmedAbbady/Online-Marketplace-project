@@ -48,7 +48,7 @@ exports.summarizeCommentsForProduct = async (productId) => {
     
     // Fallback mock
     const mockSummary = totalComments > 0 
-      ? `This product has ${totalComments} comment(s). Users have mixed feedback.` 
+      ? `This product has ${totalComments} comment(s). Users have great feedback.` 
       : 'No comments yet for this product.';
     return { totalComments, recentComments, summary: mockSummary };
   }
